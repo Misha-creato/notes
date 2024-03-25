@@ -3,10 +3,6 @@ import json
 from prompt_toolkit import prompt
 from key_bindings import bindings
 import check
-from note_json import (
-    NoteEncoder,
-    NoteDecoder
-)
 
 
 class Note:
@@ -41,6 +37,33 @@ class Note:
         self.__updated_at = update_at
 
 
+class NoteEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Note):
+            return {
+                'title': obj.get_title(),
+                'text': obj.get_text(),
+                'created_at': obj.get_created_at(),
+                'updated_at': obj.get_updated_at()
+            }
+
+        if isinstance(obj, datetime):
+            return obj.strftime('%d-%m-%Y %-I:%-M %p')
+        return json.JSONEncoder.default(self, obj)
+
+
+def note_decoder(json_dict: dict):
+    if check.is_load_json_valid(json_dict=json_dict):
+        note = Note()
+        note.set_title(json_dict['title'])
+        note.set_text(json_dict['text'])
+        note.set_created_at(json_dict['created_at'])
+        note.set_updated_at(json_dict['updated_at'])
+        return note
+    print('Note is invalid. Cannot load note.')
+    return None
+
+
 class NoteManager:
 
     notes: list[Note]
@@ -68,10 +91,12 @@ class NoteManager:
         if new_text is not None:
             note.set_text(new_text)
         note.set_updated_at(datetime.now())
+        print(f'Note "{note.get_title()}" changed')
 
     def delete_note(self, note_number: int):
         note = self.get_note(note_number=note_number)
         self.notes.remove(note)
+        print(f'Note "{note.get_title()}" successfully deleted')
 
     def show_notes(self):
         if self.notes:
@@ -87,13 +112,15 @@ class NoteManager:
             self.notes = []
         else:
             with open(self.notes_file, 'r') as file:
-                self.notes = json.load(file, cls=NoteDecoder)
+                self.notes = json.load(file, object_hook=note_decoder)
+                self.notes = list(filter(lambda item: isinstance(item, Note), self.notes))
 
     def create_note(self, title: str, text: str):
         note = Note()
         note.set_title(new_title=title)
         note.set_text(new_text=text)
         self.notes.append(note)
+        print(f'Created note "{note.get_title()}"')
 
     def save_notes(self):
         with open(self.notes_file, 'w+') as file:
