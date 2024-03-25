@@ -38,4 +38,7 @@ def get_arguments():
 
     args = parser.parse_args()
 
+    if not any(vars(args).values()):
+        parser.print_help()
+
     return args
