@@ -1,13 +1,14 @@
 import json
 import datetime
-from note import Note
 
 
 class NoteEncoder(json.JSONEncoder):
     def default(self, obj):
+        from note import Note
+
         if isinstance(obj, Note):
             return {
-                'header': obj.get_header(),
+                'title': obj.get_title(),
                 'text': obj.get_text(),
                 'created_at': obj.get_created_at(),
                 'updated_at': obj.get_updated_at()
@@ -22,9 +23,11 @@ class NoteDecoder(json.JSONDecoder):
         super().__init__(object_hook=self.dict_to_note, *args, **kwargs)
 
     def dict_to_note(self, dict):
-        if 'header' in dict and 'text' in dict and 'created_at' in dict:
+        from note import Note
+
+        if 'title' in dict and 'text' in dict and 'created_at' in dict:
             note = Note()
-            note.set_header(dict['header'])
+            note.set_title(dict['title'])
             note.set_text(dict['text'])
             note.set_created_at(dict['created_at'])
             note.set_updated_at(dict['updated_at'])
