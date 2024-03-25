@@ -19,14 +19,16 @@ def main():
         note_manager.show_notes()
 
     elif args.edit:
-        if is_note_number_exists(note_number=args.edit[0], notes=note_manager.notes):
-            note_manager.edit_note(note_number=args.edit[0])
+        note_number = args.edit[0]
+        if is_note_number_exists(note_number=note_number, notes=note_manager.notes):
+            note_manager.edit_note(note_number=note_number)
         else:
             print('Note number is invalid')
 
     elif args.delete:
-        if is_note_number_exists(note_number=args.delete[0], notes=note_manager.notes):
-            note_manager.delete_note(note_number=args.delete[0])
+        note_number = args.delete[0]
+        if is_note_number_exists(note_number=note_number, notes=note_manager.notes):
+            note_manager.delete_note(note_number=note_number)
         else:
             print('Note number is invalid')
 
