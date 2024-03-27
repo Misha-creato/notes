@@ -14,10 +14,10 @@ def get_arguments():
         help='Create a new note'
     )
     group.add_argument(
-        '-s',
-        '--show',
+        '-l',
+        '--list',
         action='store_true',
-        help='Show list of notes'
+        help='Show list of all notes'
     )
     group.add_argument(
         '-e',
@@ -34,6 +34,14 @@ def get_arguments():
         type=int,
         metavar='note number',
         help='Delete a note'
+    )
+    group.add_argument(
+        '-s',
+        '--show',
+        nargs=1,
+        type=int,
+        metavar='note number',
+        help='Show a note'
     )
 
     args = parser.parse_args()
